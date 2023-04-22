@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+
+{% block menu %}
+    {% if user.is_authenticated %}
+    <li class="nav-item">
+        <a class="nav-link text-warning text-light pt-3" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample"><i class="bi bi-search"></i>Search</a>
+    </li>
+    {% endif %}
+{% endblock %}
+{% block search %}
+<div class="collapse" id="collapseExample" style="margin-top: 67px; background: black;">
+  {% if request.user.role == 'CANDIDATE' %}
+    <div class="col d-flex justify-content-center pt-2 search-list">
+      {% include 'partial/search.html' %}
+    </div>
+    {% endif %}
+
+      <div class="col d-flex justify-content-center pt-2 search-list" style="padding-bottom: 20px;">
+          <li class="d-flex">
+            <form action="" method="get">
+                <input type="submit" class="btn btn-secondary" name="category" value="Management">
+                <input type="submit" class="btn btn-secondary" name="category" value="Programming">
+                <input type="submit" class="btn btn-secondary" name="category" value="Sales">
+                <input type="submit" class="btn btn-secondary" name="category" value="Insurance">
+                <input type="submit" class="btn btn-secondary" name="category" value="Finance">
+                <input type="submit" class="btn btn-secondary" name="category" value="Design">
+            </form>
+        </li>
+      </div>
+
+</div>
+{% endblock %}
+{% block content %}
+    {% if user.is_authenticated %}
+    <div class="col-12">
+        {% if request.user.role == 'EMPLOYER' %}
+            {% for resume in resumes %}
+                {% if resume.is_active == True %}
+                    <div class="card" style="width: 100%; margin: 5px">
+                        <div class="card-body">
+                            <a href="{% url 'job:resume' user.pk resume.pk %}" style="text-decoration: none">
+                                <h5 class="card-title">{{ resume.position }}</h5>
+                            </a>
+                            <p class="card-text">{{ resume.name|capfirst }} {{ resume.last_name|capfirst }}</p>
+                            <p class="card-text">{{ resume.get_category_display }}</p>
+                            <p class="card-text">{{ resume.experience.all.last }}</p>
+                            <p class="card-text" style="font-size: 12px; color: gray;">{{ resume.updated_at }}</p>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% if resumes|length == 0 %}
+            <h5 class="card-title" style="margin-bottom: 550px; text-align: center; width: 100%;">
+                You don't have any Resume yet
+            </h5>
+        {% endif %}
+            {% if is_paginated %}
+                {% include 'partial/pagination.html' %}
+            {% endif %}
+        {% else %}
+            {% for vacancy in vacancies %}
+                {% if vacancy.is_active == True %}
+                <div class="card" style="width: 100%; margin: 5px">
+                    <div class="card-body">
+                        <a href="{% url 'job:vacancy' user.pk vacancy.pk %}" style="text-decoration: none">
+                            <h5 class="card-title">{{ vacancy.position }}</h5>
+                        </a>
+                        <a href="{% url 'job:profile' vacancy.created_by.pk %}" style="text-decoration: none">
+                            <p class="card-text">{{ vacancy.created_by|capfirst }}</p>
+                        </a>
+                        <p class="card-text">{{ vacancy.salary }} тг.</p>
+                        <p class="card-text">{{ vacancy.description }}</p>
+                        <p class="card-text" style="font-size: 12px; color: gray;">Last update: {{ vacancy.updated_at }}</p>
+                    </div>
+                </div>
+                {% endif %}
+            {% endfor %}
+                {% if vacancies|length == 0 %}
+                    <h5 class="card-title" style="margin-bottom: 550px; text-align: center; width: 100%;">
+                        You don't have any Vacancy yet
+                    </h5>
+                {% endif %}
+            {% if is_paginated %}
+                {% include 'partial/pagination.html' %}
+            {% endif %}
+        {% endif %}
+    </div>
+    {% else %}
+        <br>
+        <h1>Welcome to HeadHunter </h1>
+        <h3 class="card-title" style="margin-bottom: 550px; text-align: center; width: 100%;">
+            Please sign up if you don't have an account or just log in:)
+        </h3>
+    {% endif %}
+{% endblock %}

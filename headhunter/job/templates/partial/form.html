@@ -1,0 +1,19 @@
+{% load static %}
+{% load django_bootstrap5 %}
+
+{% if not fields_only %}
+    <form action="{{ action_url }}" method="{{ form_method }}" enctype="{{ enctype }}">
+    {% csrf_token %}
+{% endif %}
+
+{% for error in form.non_field_errors %}
+    <p class="error">{{ error }}</p>
+{% endfor %}
+
+{% bootstrap_form form %}
+
+{% if not fields_only %}
+    <br/>
+    <input type="submit" value="{{ button_text|default:'Submit' }}"/>
+    </form>
+{% endif %}

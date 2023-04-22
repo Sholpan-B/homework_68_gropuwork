@@ -1,0 +1,14 @@
+`{% extends 'base.html' %}
+
+{% block title %}
+    Delete vacancy
+{% endblock %}
+
+{% block content %}
+    <h1 style="margin-top: -50px;">Are you sure you want to delete the vacancy?</h1>
+    <form action="" method="post" style="margin-bottom: 520px;">
+        {% csrf_token %}
+        <input class="btn btn-success mx-1" type="submit" value="Yes">
+        <a class="btn btn-danger mx-1" href="{% url 'job:vacancy' user.pk vacancy.pk %}">No</a>
+    </form>
+{% endblock %}

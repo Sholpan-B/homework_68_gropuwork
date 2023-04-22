@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load django_bootstrap5 %}
+
+{% block title %}
+    Experience edit
+{% endblock %}
+
+{% block content %}
+    <h3>Edit work experience</h3>
+
+    <div>
+        <form action="" method="POST">
+            <div class="form">
+                {% csrf_token %}
+                {% bootstrap_form form %}
+                {% bootstrap_button button_type="submit" content="Save" %}
+            </div>
+        </form>
+    </div>
+
+{% endblock %}

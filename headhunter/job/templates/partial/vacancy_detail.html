@@ -1,0 +1,19 @@
+{% if vacancy.created_by.pk == user.pk and update == "0" %}
+    <div class="border-bottom d-flex py-3">
+        <a href="{% url 'job:edit_vacancy' user.pk vacancy.pk %}" class="btn btn-secondary mr-3">Edit vacancy</a><br>
+        <form action="" method="get">
+            <input type="hidden" name="vacancy_pk"
+                   value="{{ vacancy.pk }}">
+            <input type="submit" class="btn btn-secondary mr-3" name="refresh"
+                   value="Update">
+        </form>
+        <a href="{% url 'job:delete_vacancy' user.pk vacancy.pk %}" class="btn btn-danger">Delete vacancy</a><br>
+    </div>
+{% endif %}
+<span class="fw-bold">Position: </span><span>{{ vacancy.position }}<br></span>
+<span class="fw-bold">Category: </span><span>{{ vacancy.get_category_display }}<br></span>
+<span class="fw-bold">Offered salary: </span><span>{{ vacancy.salary }} тг.<br></span>
+<span class="fw-bold">Description: </span><span>{{ vacancy.description|linebreaks }}<br></span>
+<span class="fw-bold">Expected experience from: </span><span>{{ vacancy.experience_from}} years<br></span>
+<span class="fw-bold">Expected experience to: </span><span>{{ vacancy.experience_from}} years<br></span>
+<span class="fw-bold">Updated at: </span><span>{{ vacancy.updated_at }}<br></span>

@@ -1,0 +1,20 @@
+<h5 class="fw-bold mb-1 mt-2">Work experience:</h5>
+<div>
+    {% for experience in resume.work_experience.all %}
+        <div class="pt-2 border-top">
+            <span class="fw-bold">Company name: </span><span>{{ xperience.company_name }}<br></span>
+            <span class="fw-bold">Start date: </span><span>{{ experience.start_date }}<br></span>
+            <span class="fw-bold"> Date of termination: </span><span>{{ experience.end_date }}<br></span>
+
+            <span class="fw-bold">Position: </span><span>{{ experience.position }}<br></span>
+            <span class="fw-bold">Responsibilities: </span><span>{{ experience.responsibilities }}<br></span>
+
+
+            {% if user_obj == user %}
+                <a href="{% url 'job:edit_experience' user.pk resume.pk experience.pk %}" class="btn btn-secondary mt-2">Edit</a>
+                <a href="{% url 'job:delete_experience' user.pk resume.pk experience.pk %}"
+                   class="btn btn-danger mt-2">Delete</a><br>
+            {% endif %}
+        </div>
+    {% endfor %}
+</div>

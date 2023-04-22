@@ -1,0 +1,32 @@
+<h4 class="fw-bold mb-1">Main part</h4>
+            <span class="fw-bold">Updated at: </span><span>{{ resume.updated_at }}<br></span>
+            <span class="fw-bold">Created by: </span><span>{{ resume.first_name }} {{ resume.last_name }}<br></span>
+            <span class="fw-bold">Title: </span><span>{{ resume.position }}<br></span>
+            <span class="fw-bold">Category: </span><span>{{ resume.get_category_display }}<br></span>
+            <span class="fw-bold">Expected salary: </span><span>{{ resume.salary }} тг.<br></span>
+            <span class="fw-bold">Telegram: </span><span>{{ resume.telegram }}<br></span>
+            <span class="fw-bold">Email: </span><span>{{ resume.email }}<br></span>
+            <span class="fw-bold">Phone number: </span><span>{{ resume.phone_number }}<br></span>
+            {% if resume.facebook %}
+                <span class="fw-bold">Facebook: </span><span>{{ resume.facebook }}<br></span>
+            {% endif %}
+            {% if resume.linkedin %}
+                <span class="fw-bold">Linkedin: </span><span>{{ resume.linkedin }}<br></span>
+            {% endif %}
+
+
+            <div class="d-flex">
+                {% if user_obj == user %}
+                    <div>
+                        <a href="{% url 'job:edit_resume' user.pk resume.pk %}" class="btn btn-secondary">Edit the main part of the reume</a><br>
+                    </div>
+                    <div class="ms-2">
+                        <form action="" method="get">
+                            <input type="hidden" name="resume_pk"
+                                   value="{{ resume.pk }}">
+                            <input type="submit" class="btn btn-secondary" name="refresh"
+                                   value="Update">
+                        </form>
+                    </div>
+                {% endif %}
+            </div>

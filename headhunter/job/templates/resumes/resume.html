@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    {% if user_obj == user or user.role == 'EMPLOYER' %}
+        <h2 class="fw-bold text-center">{{ resume.title }}</h2>
+
+        {% if user_obj == user %}
+            <a href="{% url 'job:delete_resume' user.pk resume.pk %}" class="btn btn-danger" style="margin-left: 950px;">
+                Delete resume</a>
+            <div>
+        {% endif %}
+
+    {% include 'partial/resume_main_block.html' %}
+
+    {% if resume.experience.all %}
+        {% include 'partial/experience.html' %}
+    {% endif %}
+
+    <div class="border-bottom">
+        {% if user_obj == user %}
+            <a href="{% url 'job:create_experience' user.pk resume.pk %}" class="btn btn-secondary mt-2 mb-2 ms-3">Add work experience</a><br>
+        {% endif %}
+    </div>
+
+    {% if resume.education.all %}
+        {% include 'partial/education.html' %}
+    {% endif %}
+
+    <div class="border-bottom">
+        {% if user_obj == user %}
+            <a href="{% url 'job:create_education' user.pk resume.pk %}" class="btn btn-secondary mb-2 ms-3">Add education</a><br>
+        {% endif %}
+    </div>
+
+    {% if request.user.role == 'EMPLOYER' %}
+        <div class="row">
+            <div class="col-2">
+                <button id="addBtn" type="button" class="btn btn-success" data-bs-toggle="modal"
+                        data-bs-target="#staticBackdrop">Send an invitation
+                </button>
+            </div>
+            <div id="place"></div>
+        </div>
+    {% endif %}
+    </div>
+
+        {% if request.user.pk == resume.created_by.pk %}
+            <div>
+                {% if response|length == 0 %}
+                {% else %}
+                <h2>Responses for this resume</h2>
+                {% for response in responses %}
+                    {% if response.resume == resume %}
+                        <div class="card" style="margin-bottom: 30px; width: 70%">
+                            <div class="card-body">
+                                <dl class="row" style="margin-bottom: 0px;">
+                                    <dt class="col-sm-3">Company</dt>
+                                    <dd class="col-sm-9">{{ response.vacancy.created_by.username }}</dd>
+                                    <dt class="col-sm-3">Position</dt>
+                                    <dd class="col-sm-9"><a class="resume"
+                                                            href="{% url 'job:vacancy' user.pk response.vacancy.pk %}">
+                                        {{ response.vacancy.position }}</a>
+                                    </dd>
+                                    <dt class="col-sm-3">Open chat</dt>
+                                    <dd class="col-sm-9"><a class="list-unstyled text-dark"
+                                                            href="{% url 'job:response' user.pk user.pk response.pk %}"><i
+                                            class="bi bi-chat ml-4" style="font-size: 1.5rem;"></i></a></dd>
+                                </dl>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+                {% endif %}
+            </div>
+        {% endif %}
+
+        <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+             aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="staticBackdropLabel">Choose a resume</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        {% for vacancy in vacancies %}
+                            <div>
+                                <button id="{{ vacancy.pk }}" data-bs-dismiss="modal" type="button"
+                                        onclick="addResume(event)" data-name="{{ vacancy.pk }}" value="{{ resume.pk }}"
+                                        class="btn btn-light">{{ vacancy.position }}
+                                </button>
+                            </div>
+                        {% empty %}
+                            <p>You don't have a resume</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            function addResume(event) {
+                event.preventDefault()
+                let answer = {
+                    vacancy: event.target.dataset.name,
+                    resume: event.target.value
+                }
+                console.log(answer)
+                var $crf = $('[name="csrfmiddlewaretoken"]').attr('value');
+                $.ajax({
+                    url: `http://localhost:8000/api/add_resume/`,
+                    method: 'POST',
+                    headers: {"X-CSRFToken": $crf},
+                    data: JSON.stringify(answer),
+                    dataType: "json",
+                    contentType: "application/json",
+                    success: function (data) {
+                        $('#place').html(`<p style="color: limegreen">Response sent`)
+                    },
+                    error: function (response, headers) {
+                        console.log(response)
+                        $('#place').html(`<p style="color: red">You have already applied for this job`)
+                    }
+                })
+
+            }
+        </script>
+    {% endif %}
+{% endblock %}

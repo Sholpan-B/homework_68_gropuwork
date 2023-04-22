@@ -1,0 +1,123 @@
+{% load static %}
+{% load django_bootstrap5 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+{% bootstrap_messages %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- CSS only -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+    <!-- JavaScript Bundle with Popper -->
+    <link rel="shortcut icon" type="image/png" href="{% static 'favicon.ico' %}"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <title>{% block title %} HeadHunter {% endblock %}</title>
+    <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ="
+    crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+
+<body>
+<div class="fixed-top pb-3" style="background-color: rgba(34,35,36,255);">
+    <div class="container container-fluid d-flex">
+        <a class="navbar-brand ml-2" href="{% url 'job:index' %}"
+           style="font-size: 36px; font-style: italic; margin-right: 180px;"><img
+                src="{% static 'img/logo.png' %}"  alt="Logo" width="80" height="80">></a>
+        <div style="font-size: 21px; ">
+            <ul class="d-flex list-unstyled">
+                {% block menu %}{% endblock %}
+                {% if user.is_authenticated %}
+                    {% if user.role == 'CANDIDATE' %}
+                        <li class="nav-item">
+                            <a class="nav-link text-warning text-light pt-3" href="{% url 'job:resumes' user.pk %}">My resumes</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-warning text-light create" href="{% url 'job:create_resume' user.pk %}">
+                                <button type="button" class="btn btn-outline-success rounded-pill"
+                                        style="font-size: 19px">Create resume
+                                </button>
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link text-warning text-light pt-3" href="{% url 'job:vacancies' user.pk %}">My vacancies</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-warning text-light create" href="{% url 'job:create_vacancy' user.pk %}">
+                                <button type="button" class="btn btn-outline-success rounded-pill"
+                                        style="font-size: 19px">Create vacancy
+                                </button>
+                            </a>
+                        </li>
+                    {% endif %}
+
+                    <li class="nav-item">
+                        <a class="nav-link text-warning text-light pt-3" href="{% url 'job:responses' user.pk %}">Responses</a>
+                    </li>
+                    <li class="nav-item">
+                        <div class="d-flex align-middle flex-wrap" style="margin-left: 40px;">
+                            <div>
+                                <a class="nav-link text-warning text-light" href="{% url 'accounts:profile' user.pk %}"
+                                   style="font-size: 2rem;"><i
+                                        class="bi bi-person-circle"></i></a>
+                            </div>
+                            <div>
+                                <form action="{% url 'accounts:logout' %}" method="POST" class="ml-3">
+                                    {% csrf_token %}
+                                    <input type="submit" value="Log out" class="btn btn-secondary" style="margin-top: 13px;">
+                                </form>
+                            </div>
+                        </div>
+                    </li>
+                {% else %}
+                    {% if 'auth' in request.get_full_path %}
+                        <li class="nav-item mt-2 text-right" style="width: 230px; margin-left: 500px;">
+                            <a href="{% url 'accounts:login' %}"
+                               class="btn btn-danger mt-2 text-right">Log in</a>
+                        </li>
+                        <li class="nav-item mt-2 text-right">
+                            <a href="{% url 'accounts:register' %}" class="btn btn-danger mt-2 ml-2">Sign up</a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item mt-2 text-right" style="width: 230px; margin-left: 500px;">
+                            <a href="{% url 'accounts:login' %}?next={{ request.get_full_path }}"
+                               class="btn btn-danger mt-2 text-right">Log in</a>
+                        </li>
+                        <li class="nav-item mt-2 text-right">
+                            <a href="{% url 'accounts:register' %}?next={{ request.get_full_path }}"
+                               class="btn btn-danger mt-2 ml-2">Sign up</a>
+                        </li>
+                    {% endif %}
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+
+</div>
+<div class="pt-3">
+    {% block search %}{% endblock %}
+    <div class="container p-0 pb-3" style="height: auto; margin-top: 85px;">
+        <div style="padding-top: 60px;">
+            {% block content %}{% endblock %}
+            {% block bottom_href %}{% endblock %}
+        </div>
+    </div>
+</div>
+
+<footer style="background-color: rgba(34,35,36,255); height: 80px; left:0px; bottom:0px; width:100%; margin-top: 10px;" class="text-light text-center">
+    <div class="container">
+        <p class="pt-3">
+            &copy; 2023 Headhunter project
+        </p>
+    </div>
+</footer>
+
+{% block script %}{% endblock %}
+
+</body>
+</html>

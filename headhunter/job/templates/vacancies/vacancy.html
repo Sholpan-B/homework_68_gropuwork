@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2 class="text-center">Vacancy detail</h2>
+    <div style="margin-bottom: 20px;">
+        {% include 'partial/vacancy_detail.html' with update="1" %}
+
+        {% if request.user.role == 'CANDIDATE' %}
+            <div class="row">
+                <div class="col-2">
+                    <button id="addBtn" type="button" class="btn btn-success" data-bs-toggle="modal"
+                            data-bs-target="#staticBackdrop">Apply
+                    </button>
+                </div>
+                <div id="place"></div>
+            </div>
+        {% endif %}
+    </div>
+    {% if request.user.pk == vacancy.created_by.pk %}
+        <div>
+            {% if responses|length == 0 %}
+            {% else %}
+            <h2>Applied resumes</h2>
+            {% endif %}
+            {% for response in responses %}
+                {% if response.vacancy == vacancy %}
+                    <div class="card" style="margin-bottom: 30px; width: 70%">
+                        <div class="card-body">
+                            <dl class="row" style="margin-bottom: 0px;">
+                                <dt class="col-sm-3">Full name</dt>
+                                <dd class="col-sm-9">{{ response.resume.first_name }} {{ response.resume.last_name }}</dd>
+                                <dt class="col-sm-3">Position</dt>
+                                <dd class="col-sm-9"><a class="resume"
+                                                        href="{% url 'job:resume' response.resume.created_by.pk response.resume.pk %}">
+                                    {{ response.resume.position }}</a>
+                                </dd>
+                                <dt class="col-sm-3">Open chat</dt>
+                                <dd class="col-sm-9"><a class="list-unstyled text-dark" href="#"><i
+                                        class="bi bi-chat ml-4" style="font-size: 1.5rem;"></i></a></dd>
+                            </dl>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+         aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">Choose resume to apply</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    {% for resume in resumes %}
+                        <div>
+                            <button id="{{ resume.pk }}" data-bs-dismiss="modal" type="button"
+                                    onclick="addResume(event)" data-name="{{ vacancy.pk }}" value="{{ resume.pk }}"
+                                    class="btn btn-light">{{ resume.position }}
+                            </button>
+                        </div>
+                    {% empty %}
+                        <p> You don't have any Resume yet</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        function addResume(event) {
+            event.preventDefault()
+            let answer = {
+                vacancy: event.target.dataset.name,
+                resume: event.target.value
+            }
+            console.log(answer)
+            var $crf = $('[name="csrfmiddlewaretoken"]').attr('value');
+            $.ajax({
+                url: `http://localhost:8000/api/add_resume/`,
+                method: 'POST',
+                headers: {"X-CSRFToken": $crf},
+                data: JSON.stringify(answer),
+                dataType: "json",
+                contentType: "application/json",
+                success: function (data) {
+                    $('#place').html(`<p style="color: limegreen">Response sent`)
+                },
+                error: function (response, headers) {
+                    console.log(response)
+                    $('#place').html(`<p style="color: red">You already applied for thi vacancy`)
+                }
+            })
+
+        }
+    </script>
+
+{% endblock %}

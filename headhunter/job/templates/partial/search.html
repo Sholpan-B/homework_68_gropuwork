@@ -1,0 +1,8 @@
+{% load static %}
+{% load django_bootstrap5 %}
+<form class="text-center" action="" method="GET" style="width: 300px; text-align: center;">
+    <div class="d-flex">
+    <span class="mr-3">{% bootstrap_form form %}</span>
+    {% bootstrap_button button_class="btn-secondary search-button" button_type="submit" content='Search' %}
+    </div>
+</form>

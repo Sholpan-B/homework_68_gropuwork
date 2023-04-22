@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load django_bootstrap5 %}
+
+{% block content %}
+    {% if user.is_authenticated %}
+        {% if vacancies_list|length == 0 %}
+            <h5 class="card-title" style="margin-bottom: 550px; text-align: center; width: 100%;">
+                You don't have any Vacancy yet
+            </h5>
+        {% else %}
+        <div class="d-flex flex-row flex-wrap" style="margin-bottom: 380px;">
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th scope="col">Position title</th>
+                    <th scope="col">Last update</th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for vacancy in vacancies_list %}
+                    <tr>
+                        <td class="col-3">
+                            <a class="list-unstyled text-dark" href="{% url 'job:vacancy' user.pk vacancy.pk %} ">
+                                {{ vacancy.position }}
+                            </a>
+                        </td>
+                        {% if not vacancy.updated_at %}
+                            <td class="col-3"> ---- / -- / --</td>
+                        {% else %}
+                            <td class="col-3">{{ vacancy.updated_at }}</td>
+                        {% endif %}
+                        <td class="col-2">
+                            {% if user_obj == user %}
+                                <form action="" method="get">
+                                    <input type="hidden" class="btn btn-primary" name="vacancy_pk"
+                                           value="{{ vacancy.pk }}">
+                                    {% if vacancy.is_active %}
+                                        <input type="submit" class="btn btn-primary" name="deactivate"
+                                               value="Deactivate">
+                                    {% else %}
+                                        <input type="submit" class="btn btn-primary" name="activate"
+                                               value="Publish">
+                                    {% endif %}
+                                </form>
+                            {% endif %}
+                        </td>
+                        <td class="col-2">
+                            <form action="" method="get">
+                                <input type="hidden" name="vacancy_pk"
+                                       value="{{ vacancy.pk }}">
+                                <input type="submit" class="btn btn-primary mr-3" name="refresh"
+                                       value="Update">
+                            </form>
+                        </td>
+                        <td class="col-1">
+                            <a href="{% url 'job:delete_vacancy' user.pk vacancy.pk %}" class="btn btn-danger">Delete vacancy</a><br>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+    {% endif %}
+{% endblock %}
+
+

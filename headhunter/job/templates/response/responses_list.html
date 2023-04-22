@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    {% if user.is_authenticated %}
+        <div class="d-flex flex-row flex-wrap" style="margin-bottom: 460px;">
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th scope="col">Vacancy</th>
+                    <th scope="col">Resume</th>
+                    {% if request.user.role == 'CANDIDATE' %}
+                    <th scope="col">Employer</th>
+                    {% else %}
+                    <th scope="col">Candidate</th>
+                    {% endif %}
+                    <th scope="col">Open chat</th>
+                </tr>
+                </thead>
+                {% for response in responses %}
+                    {% if request.user.role == 'CANDIDATE' %}
+                        {% if response.resume.created_by == request.user %}
+                            <tbody>
+                            <tr>
+                                <td class="col-3">
+                                    <a class="list-unstyled text-dark" href="{% url 'job:vacancy' user.pk response.vacancy.pk %}">
+                                        {{ response.vacancy.position }}
+                                    </a>
+                                </td>
+                                <td class="col-3">
+                                    <a class="list-unstyled text-dark" href="{% url 'job:resume' user.pk response.resume.pk %}">
+                                        {{ response.resume.position }}
+                                    </a>
+                                </td>
+                                <td class="col-3">
+                                    <a class="list-unstyled text-dark"
+                                       href="{% url 'accounts:profile' response.vacancy.created_by.pk %}">
+                                        {{ response.vacancy.created_by.username|capfirst }}
+                                    </a>
+                                </td>
+                                <td class="col-3">
+                                    <a class="list-unstyled text-dark"
+                                       href="{% url 'job:response' user.pk response.resume.pk response.pk %}">
+                                        <i class="bi bi-chat ml-4" style="font-size: 1.5rem;"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    {% else %}
+                    {% if response.vacancy.created_by == request.user %}
+                        <tbody>
+
+                        <tr>
+                            <td class="col-3">
+                                <a class="list-unstyled text-dark" href="{% url 'vacancy' user.pk response.vacancy.pk %}">
+                                    {{ response.vacancy.position }}
+                                </a>
+                            </td>
+                            <td class="col-3">
+                                <a class="list-unstyled text-dark" href="{% url 'resume' user.pk response.resume.pk %}">
+                                    {{ response.resume.position }}
+                                </a>
+                            </td>
+                            <td class="col-3">
+                                <a class="list-unstyled text-dark"
+                                   href="{% url 'accounts:profile' response.resume.created_by.pk %}">
+                                    {{ response.resume.created_by.username|capfirst }}
+                                </a>
+                            </td>
+
+                            <td class="col-3">
+                                <a class="list-unstyled text-dark"
+                                   href="{% url 'job:response' user.pk response.resume.pk response.pk %}">
+                                    <i class="bi bi-chat ml-4" style="font-size: 1.5rem;"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    {% endif %}
+                    {% endif %}
+
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,19 @@
+<h4 class="fw-bold mb-1 mt-2">Education:</h4>
+<div>
+    {% for education in resume.education.all %}
+        <div class="pt-2 border-top">
+            <span class="fw-bold">University: </span><span>{{ education.university }}<br></span>
+            <span class="fw-bold">Location: </span><span>{{ education.location }}<br></span>
+            <span class="fw-bold">Date of admission: </span><span>{{ education.start_date }}<br></span>
+            <span class="fw-bold">Graduation date: </span><span>{{ education.end_date }}<br></span>
+            <span class="fw-bold">Major: </span><span>{{ education.major }}<br></span>
+
+            {% if user_obj == user %}
+                <a href="{% url 'job:edit_education' user.pk resume.pk education.pk %}"
+                   class="btn btn-secondary mb-2 mt-2">Edit</a>
+                <a href="{% url 'job:delete_education' user.pk resume.pk education.pk %}"
+                   class="btn btn-danger mb-2 mt-2">Delete</a><br>
+            {% endif %}
+        </div>
+    {% endfor %}
+</div>

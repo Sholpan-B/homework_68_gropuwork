@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load django_bootstrap5 %}
+
+{% block content %}
+    {% if user.is_authenticated %}
+        <div class="d-flex flex-row flex-wrap">
+            <table class="table table-striped">
+                {% if resumes_list|length == 0 %}
+                    <h5 class="card-title" style="margin-bottom:530px; text-align: center; width: 100%;">
+                        You don't have any Resume yet
+                    </h5>
+                {% else %}
+                <thead>
+                <tr>
+                    <th scope="col">Full name</th>
+                    <th scope="col">Last update</th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                </tr>
+                </thead>
+                {% endif %}
+                <tbody>
+                {% for resume in resumes_list %}
+                    <tr>
+                        <td class="col-3">
+                            <a class="list-unstyled text-dark" href="{% url 'job:resume' user.pk resume.pk %} ">
+                                {{ resume.title }}
+                            </a>
+                        </td>
+
+                        <td class="col-3">{{ resume.updated_at }}</td>
+
+                        <td class="col-2">
+                            {% if user_obj == user %}
+                                <form action="" method="get">
+                                    <input type="hidden" name="resume_pk"
+                                           value="{{ resume.pk }}">
+                                    {% if resume.is_active %}
+                                        <input type="submit" class="btn btn-primary" name="deactivate"
+                                               value="Deactivate resume">
+
+                                    {% else %}
+                                        <input type="submit" class="btn btn-primary" name="activate"
+                                               value="Publish">
+                                    {% endif %}
+                                </form>
+                            {% endif %}
+                        </td>
+
+                        <td class="col-2">
+                            {% if user_obj == user %}
+                                <form action="" method="get">
+                                    <input type="hidden" name="resume_pk"
+                                           value="{{ resume.pk }}">
+                                    <input type="submit" class="btn btn-primary" name="refresh"
+                                           value="Update">
+                                </form>
+                            {% endif %}
+                        </td>
+
+                        <td class="col-1">
+                            {% if user_obj == user %}
+                                <a href="{% url 'job:delete_resume' user.pk resume.pk %}" class="btn btn-danger">Delete
+                                    resume</a>
+                            {% endif %}
+                        </td>
+
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+{% endblock %}
+
+
